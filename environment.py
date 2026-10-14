@@ -1,4 +1,6 @@
 import json
+import math
+import random
 
 
 class Environment:
@@ -14,6 +16,8 @@ class Environment:
         self.battery = config["resources"]["battery"]
         self.time_left = config["resources"]["time"]
         self.costs = config["resources"]["costs"]
+        self.scan_noise = config["sensors"]["scan_noise"]
+        self.rng = random.Random(config["seed"])
 
         # The hidden truth. The underscore means "private: the agent must not touch this"
         self._eve_position = (config["hidden"]["eve"]["x"], config["hidden"]["eve"]["y"])
@@ -45,8 +49,25 @@ class Environment:
             "time_left": self.time_left,
         }    
 
+    def scan(self):
+        distance = math.dist(self.position, self._eve_position)
+        true_strength = 1 / (1 + distance)
+        noise = self.rng.gauss(0, self.scan_noise)
+        strength = max(0.0, min(1.0, true_strength + noise))
+
+        self.battery -= self.costs["scan"]["battery"]
+        self.time_left -= self.costs["scan"]["time"]
+
+        return {
+            "action": "scan",
+            "position": self.position,
+            "strength": round(strength, 3),
+            "battery": self.battery,
+            "time_left": self.time_left,
+        }
+
 
 if __name__ == "__main__":
     env = Environment("configs/mission_01.json")
-    print(env.move("E"))
-    print(env.move("N"))
+    for _ in range(4):
+     print(env.scan())
