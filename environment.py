@@ -65,6 +65,12 @@ class Environment:
         noise = self.rng.gauss(0, self.scan_noise)
         strength = max(0.0, min(1.0, true_strength + noise))
 
+        # a scan also "pings" any clue within 3 cells that has not been collected yet
+        pings = []
+        for clue_pos in self._clues:
+            if clue_pos not in self._collected and math.dist(self.position, clue_pos) <= 3:
+                pings.append(clue_pos)
+
         self.battery -= self.costs["scan"]["battery"]
         self.time_left -= self.costs["scan"]["time"]
 
@@ -72,6 +78,7 @@ class Environment:
             "action": "scan",
             "position": self.position,
             "strength": round(strength, 3),
+            "pings": pings,
             "battery": self.battery,
             "time_left": self.time_left,
         }
