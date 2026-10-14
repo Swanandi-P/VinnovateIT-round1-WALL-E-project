@@ -1,0 +1,29 @@
+import json
+
+
+class Environment:
+    def __init__(self, config_path):
+        # Read the mission file into a Python dictionary (a lookup table)
+        with open(config_path) as file:
+            config = json.load(file)
+
+        # Things the agent is allowed to know
+        self.width = config["map"]["width"]
+        self.height = config["map"]["height"]
+        self.position = tuple(config["map"]["start"])
+        self.battery = config["resources"]["battery"]
+        self.time_left = config["resources"]["time"]
+
+        # The hidden truth. The underscore means "private: the agent must not touch this"
+        self._eve_position = (config["hidden"]["eve"]["x"], config["hidden"]["eve"]["y"])
+        self._eve_status = config["hidden"]["eve"]["status"]
+        self._clues = []
+        for clue in config["hidden"]["clues"]:
+            self._clues.append((clue["x"], clue["y"]))
+
+
+if __name__ == "__main__":
+    env = Environment("configs/mission_01.json")
+    print("Grid size:", env.width, "x", env.height)
+    print("WALL-E starts at:", env.position)
+    print("Battery:", env.battery, "Time:", env.time_left)
