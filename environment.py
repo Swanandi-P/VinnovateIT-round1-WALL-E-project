@@ -13,6 +13,7 @@ class Environment:
         self.position = tuple(config["map"]["start"])
         self.battery = config["resources"]["battery"]
         self.time_left = config["resources"]["time"]
+        self.costs = config["resources"]["costs"]
 
         # The hidden truth. The underscore means "private: the agent must not touch this"
         self._eve_position = (config["hidden"]["eve"]["x"], config["hidden"]["eve"]["y"])
@@ -22,8 +23,30 @@ class Environment:
             self._clues.append((clue["x"], clue["y"]))
 
 
+    def move(self, direction):
+        steps = {"N": (0, -1), "S": (0, 1), "E": (1, 0), "W": (-1, 0)}
+        dx, dy = steps[direction]
+        new_x = self.position[0] + dx
+        new_y = self.position[1] + dy
+
+        bumped = True
+        if 0 <= new_x < self.width and 0 <= new_y < self.height:
+            self.position = (new_x, new_y)
+            bumped = False
+
+        self.battery -= self.costs["move"]["battery"]
+        self.time_left -= self.costs["move"]["time"]
+
+        return {
+            "action": "move",
+            "position": self.position,
+            "bumped": bumped,
+            "battery": self.battery,
+            "time_left": self.time_left,
+        }    
+
+
 if __name__ == "__main__":
     env = Environment("configs/mission_01.json")
-    print("Grid size:", env.width, "x", env.height)
-    print("WALL-E starts at:", env.position)
-    print("Battery:", env.battery, "Time:", env.time_left)
+    print(env.move("E"))
+    print(env.move("N"))
