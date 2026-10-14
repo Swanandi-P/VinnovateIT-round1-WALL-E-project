@@ -1,0 +1,10 @@
+{
+  "name": "mission_01",
+  "map": { "width": 10, "height": 10, "start": [0, 0] },
+  "initial_signal": { "x": 6, "y": 6, "strength": 0.4, "timestamp": 0 },
+  "resources": { "battery": 60, "time": 100 },
+  "hidden": {
+    "eve": { "x": 7, "y": 8, "status": "low_power" },
+    "clues": [ { "x": 5, "y": 7 }, { "x": 8, "y": 4 } ]
+  }
+}
