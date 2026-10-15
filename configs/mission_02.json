@@ -1,0 +1,74 @@
+{
+  "name": "mission_02_recharge",
+  "seed": 42,
+  "map": {
+    "width": 10,
+    "height": 10,
+    "start": [
+      0,
+      0
+    ],
+    "stations": [
+      {
+        "pos": [
+          0,
+          0
+        ],
+        "uses": 2
+      }
+    ]
+  },
+  "initial_signal": {
+    "x": 6,
+    "y": 6,
+    "strength": 0.4,
+    "timestamp": 0
+  },
+  "resources": {
+    "battery": 40,
+    "time": 100,
+    "recharge_amount": 40,
+    "costs": {
+      "move": {
+        "battery": 1,
+        "time": 1
+      },
+      "scan": {
+        "battery": 3,
+        "time": 2
+      },
+      "inspect": {
+        "battery": 2,
+        "time": 2
+      },
+      "recharge": {
+        "battery": 0,
+        "time": 4
+      }
+    }
+  },
+  "sensors": {
+    "scan_noise": 0.02,
+    "clue_noise": 1.5,
+    "clue_status_accuracy": 0.8
+  },
+  "hidden": {
+    "eve": {
+      "x": 7,
+      "y": 8,
+      "status": "low_power"
+    },
+    "clues": [
+      {
+        "x": 5,
+        "y": 7,
+        "genuine": true
+      },
+      {
+        "x": 8,
+        "y": 4,
+        "genuine": false
+      }
+    ]
+  }
+}

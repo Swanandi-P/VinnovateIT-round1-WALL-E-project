@@ -1,7 +1,9 @@
 import math
 from belief import Belief
 
-COMMIT = 0.75  # how sure I must be (0 to 1) before I go and inspect my best guess
+COMMIT = 0.75        # how sure I must be (0 to 1) before I go and inspect my best guess
+LOW_BATTERY = 0.6    # recharge when below this fraction of a full battery (if on a station)
+SAFETY_MARGIN = 6    # spare battery and time I always keep when planning the trip home
 
 
 class Agent:
@@ -23,6 +25,14 @@ class Agent:
         self.need_rescan = False  # set after an empty inspect
         self.found = False
 
+        self.max_battery = self.battery
+        self.start = self.position
+        self.move_cost = briefing["resources"]["costs"]["move"]
+        self.stations = {}  # station position -> uses I believe are left
+        for station in briefing["map"]["stations"]:
+            self.stations[tuple(station["pos"])] = station["uses"]
+        self.returning = False  # True while I am heading back to safety
+
     # ---------- learning from what happened ----------
     def observe(self, action, obs):
         self.position = tuple(obs["position"])
@@ -36,6 +46,11 @@ class Agent:
                 if tuple(p) not in self.inspected:
                     self.pings.add(tuple(p))
             self.need_rescan = False
+
+        elif action["type"] == "recharge":
+            if obs["ok"]:
+                self.stations[self.position] -= 1
+                self.returning = False  # topped up, so I can go exploring again
 
         elif action["type"] == "inspect":
             self.inspected.add(self.position)
@@ -57,6 +72,22 @@ class Agent:
     def decide(self):
         confidence = self.belief.confidence()
         guess = self.belief.best_guess()
+
+        # --- survival rules come first ---
+        uses_here = self.stations.get(self.position, 0)
+        if uses_here > 0 and self.battery < LOW_BATTERY * self.max_battery:
+            return {"type": "recharge"}, f"I am on a station with {uses_here} use(s) left and my battery is low ({self.battery}). Recharge."
+
+        safe_point = self.nearest_safe_point()
+        moves_home = abs(safe_point[0] - self.position[0]) + abs(safe_point[1] - self.position[1])
+        battery_needed = moves_home * self.move_cost["battery"] + SAFETY_MARGIN
+        time_needed = moves_home * self.move_cost["time"] + SAFETY_MARGIN
+        if not self.returning and (self.battery < battery_needed or self.time_left < time_needed):
+            self.returning = True
+        if self.returning:
+            if self.position == safe_point:
+                return {"type": "end"}, f"I am at the safe point {safe_point}, resources are low and nothing more to recharge. End the mission safely."
+            return self.step_towards(safe_point), f"Resources are low (battery {self.battery}, time {self.time_left}). Turn back towards the safe point {safe_point}."
 
         if self.need_rescan:
             return {"type": "scan"}, "My last inspect found nothing, so my belief was wrong. Scan again for fresh data."
@@ -84,6 +115,13 @@ class Agent:
             if math.dist(spot, self.position) < 3:
                 return True
         return False
+
+    def nearest_safe_point(self):
+        # the closest station that still has uses left, otherwise home
+        options = [pos for pos, uses in self.stations.items() if uses > 0]
+        if not options:
+            return self.start
+        return self.nearest(options)
 
     def nearest(self, cells):
         return min(cells, key=lambda c: math.dist(c, self.position))
