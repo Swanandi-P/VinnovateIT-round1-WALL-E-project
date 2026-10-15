@@ -66,7 +66,7 @@ See `configs/mission_01.json`.
 |---|---|
 | `name`, `seed` | Mission name; seed for the simulator's randomness |
 | `map` | `width`, `height`, `start`, and `stations` (a list of `pos` and `uses`) |
-| `initial_signal` | `x`, `y` (where EVE was last detected), `strength`, `timestamp` |
+| `initial_signal` | `x`, `y` (where EVE was last detected), `strength`, `timestamp`. Currently only `x` and `y` are used, to build the starting belief. Strength and timestamp are stored for completeness but not yet used by the agent |
 | `resources` | `battery`, `time`, `recharge_amount`, and per-action `costs` (battery and time) |
 | `sensors` | `scan_noise`, `clue_noise`, `clue_status_accuracy` |
 | `hidden` | **Never shown to the agent.** `eve` (`x`, `y`, `status`: `active`, `low_power` or `damaged`) and `clues` (a list of `x`, `y`, `genuine`) |
@@ -117,6 +117,8 @@ See `configs/mission_01.json`.
 - A decoy is only recognised statistically, after the agent has already walked to it.
 - The agent's assumed noise levels and clue reliabilities are fixed constants, not learned.
 - The belief is a grid, so it does not scale to continuous space.
+- A scan is a single action type: the agent chooses where and when to scan, not between different kinds of scan.
+- Configs are JSON only (no YAML), and the map layout and clue positions are written out explicitly rather than generated from a seed.
 
 ## Bonus items
 
