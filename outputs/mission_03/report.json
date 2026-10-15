@@ -1,0 +1,17 @@
+{
+  "mission": "mission_03_tight",
+  "outcome": "agent_ended",
+  "actions": 74,
+  "inferred_location": [
+    7,
+    8
+  ],
+  "confidence": 0.717,
+  "inferred_status": "unknown",
+  "status_confirmed": false,
+  "scans": 3,
+  "clues_inspected": 0,
+  "empty_inspections": 0,
+  "recharges": 2,
+  "recommended_next_step": "Refuel, then go straight to (7, 8) and inspect it. EVE is probably there (72% sure), but she was not confirmed."
+}

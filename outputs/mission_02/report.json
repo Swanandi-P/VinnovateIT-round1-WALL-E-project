@@ -1,0 +1,17 @@
+{
+  "mission": "mission_02_recharge",
+  "outcome": "eve_found",
+  "actions": 47,
+  "inferred_location": [
+    7,
+    8
+  ],
+  "confidence": 0.877,
+  "inferred_status": "low_power",
+  "status_confirmed": true,
+  "scans": 4,
+  "clues_inspected": 0,
+  "empty_inspections": 0,
+  "recharges": 1,
+  "recommended_next_step": "EVE is low on power. Bring a charger to her, or carry her to the charging station."
+}
