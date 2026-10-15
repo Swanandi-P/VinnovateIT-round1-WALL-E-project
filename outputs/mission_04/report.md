@@ -36,6 +36,22 @@ SUCCESS: EVE was located and confirmed by inspection.
 - step 19: **scan** (confidence afterwards 92%). I am at a new spot with no scan nearby. Scan to gather evidence.
 - steps 20-22: **commit** (confidence afterwards 92%). Confident (0.92) EVE is near (7, 8). Walk there.
 
+## Map
+```
+    0123456789
+ 0 |S+........|
+ 1 |.++.......|
+ 2 |..+s......|
+ 3 |...++.....|
+ 4 |....c.....|
+ 5 |....s++...|
+ 6 |......ds..|
+ 7 |.......+..|
+ 8 |.......X..|
+ 9 |..........|
+```
+Legend: S station, + path, s scan spot, c genuine clue found, d decoy found, ? clue never found, M agent's final estimate, E EVE's true position, X estimate exactly on EVE, @ final position
+
 ## Recommended next step
 EVE is low on power. Bring a charger to her, or carry her to the charging station.
 

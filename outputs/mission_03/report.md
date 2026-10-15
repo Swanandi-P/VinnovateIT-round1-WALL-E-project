@@ -36,6 +36,22 @@ SAFE RETURN: the agent turned back before running out of resources. EVE was NOT 
 - steps 61-73: **turn_back** (confidence afterwards 72%). Resources are low (battery 17, time 31). Turn back towards the safe point (0, 0).
 - step 74: **end** (confidence afterwards 72%). I am at the safe point (0, 0), resources are low and nothing more to recharge. End the mission safely.
 
+## Map
+```
+    0123456789
+ 0 |@++.......|
+ 1 |+++s......|
+ 2 |.+++......|
+ 3 |..+++.....|
+ 4 |...+s+..?.|
+ 5 |....+++...|
+ 6 |.....+++..|
+ 7 |.....?....|
+ 8 |.......X..|
+ 9 |..........|
+```
+Legend: S station, + path, s scan spot, c genuine clue found, d decoy found, ? clue never found, M agent's final estimate, E EVE's true position, X estimate exactly on EVE, @ final position
+
 ## Recommended next step
 Refuel, then go straight to (7, 8) and inspect it. EVE is probably there (72% sure), but she was not confirmed.
 

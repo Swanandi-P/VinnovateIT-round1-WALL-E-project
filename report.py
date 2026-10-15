@@ -4,6 +4,7 @@ import os
 import sys
 
 from run import run_mission, write_trace
+from viz import ascii_map, LEGEND
 
 
 def top_cells(belief, n=3):
@@ -125,7 +126,11 @@ def build_report(result):
         span = f"step {ph['first']}" if ph["first"] == ph["last"] else f"steps {ph['first']}-{ph['last']}"
         L.append(f"- {span}: **{ph['mode']}** (confidence afterwards {ph['confidence']:.0%}). {ph['reason']}")
     L.append("")
-
+    L.append("## Map")
+    L.append("```")
+    L.append(ascii_map(config, trace, agent))
+    L.append("```")
+    L.append(f"Legend: {LEGEND}\n")
     L.append("## Recommended next step")
     L.append(f"{next_step}\n")
 
