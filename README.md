@@ -32,9 +32,11 @@ This runs the mission, prints the final report, and saves `trace.jsonl`, `report
 | `agent.py` | Decision rules: recharge, turn back, follow clues, commit, rescan, explore |
 | `run.py` | The agent/environment loop; writes the action trace |
 | `report.py` | Builds the final mission report |
+| `viz.py` | Draws the ASCII map of the path, scans, clues and the final estimate |
 | `try_scan.py`, `try_clue.py`, `try_ping.py` | Small scripts I used to test each piece as I built it |
 | `configs/` | Mission configs |
 | `outputs/` | Trace and report for each sample mission |
+
 
 ## Environment design
 
@@ -116,6 +118,8 @@ See `configs/mission_01.json`.
 - The agent's assumed noise levels and clue reliabilities are fixed constants, not learned.
 - The belief is a grid, so it does not scale to continuous space.
 
-## Not done
+## Bonus items
 
-Visualisation, multi-agent coordination, an LLM-versus-classical-planner comparison, a generalisation benchmark and physics simulation.
+**Done:** noisy sensors, decoy clues, and an ASCII map of each run (included in every `report.md`).
+
+**Not done:** multi-agent coordination, an LLM-versus-classical-planner comparison, a generalisation benchmark and physics simulation.
