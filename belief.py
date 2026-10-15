@@ -73,6 +73,14 @@ class Belief:
         best = max(self.status, key=self.status.get)
         return best, self.status[best]
 
+    def entropy(self):
+        # one number for "how spread out is my belief?"  (high = lost, low = sure)
+        total = 0
+        for row in self.p:
+            for v in row:
+                if v > 0:
+                    total -= v * math.log(v)
+        return total
     
     def best_guess(self):
         best = (0, 0)

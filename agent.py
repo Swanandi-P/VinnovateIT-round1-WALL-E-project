@@ -32,6 +32,7 @@ class Agent:
         for station in briefing["map"]["stations"]:
             self.stations[tuple(station["pos"])] = station["uses"]
         self.returning = False  # True while I am heading back to safety
+        self.mode = "start"     # a short label for what I am doing (used in the trace)
 
     # ---------- learning from what happened ----------
     def observe(self, action, obs):
@@ -76,6 +77,7 @@ class Agent:
         # --- survival rules come first ---
         uses_here = self.stations.get(self.position, 0)
         if uses_here > 0 and self.battery < LOW_BATTERY * self.max_battery:
+            self.mode = "recharge"
             return {"type": "recharge"}, f"I am on a station with {uses_here} use(s) left and my battery is low ({self.battery}). Recharge."
 
         safe_point = self.nearest_safe_point()
@@ -86,28 +88,47 @@ class Agent:
             self.returning = True
         if self.returning:
             if self.position == safe_point:
+                self.mode = "end"
                 return {"type": "end"}, f"I am at the safe point {safe_point}, resources are low and nothing more to recharge. End the mission safely."
+            self.mode = "turn_back"
             return self.step_towards(safe_point), f"Resources are low (battery {self.battery}, time {self.time_left}). Turn back towards the safe point {safe_point}."
 
         if self.need_rescan:
+            self.mode = "rescan"
             return {"type": "scan"}, "My last inspect found nothing, so my belief was wrong. Scan again for fresh data."
 
         if not self.scanned_near_here():
+            self.mode = "scan"
             return {"type": "scan"}, "I am at a new spot with no scan nearby. Scan to gather evidence."
 
         if confidence < COMMIT and self.pings:
             target = self.nearest(self.pings)
+            self.mode = "follow_clue"
             if self.position == target:
                 return {"type": "inspect"}, f"A clue was pinged here {target}. Inspect it."
             return self.step_towards(target), f"I am unsure (confidence {confidence:.2f}) and heard a clue at {target}. Walk to it."
 
         if confidence >= COMMIT:
+            self.mode = "commit"
             if self.position == guess:
                 return {"type": "inspect"}, f"Confident ({confidence:.2f}) and standing on my best guess {guess}. Inspect for EVE."
             return self.step_towards(guess), f"Confident ({confidence:.2f}) EVE is near {guess}. Walk there."
 
+        self.mode = "explore"
         target = self.pick_explore_target()
         return self.step_towards(target), f"Unsure (confidence {confidence:.2f}). Walk towards {target} for a new scan angle."
+
+    def belief_summary(self):
+        # a small snapshot of what I currently believe (written into the trace)
+        status = {}
+        for state, p in self.belief.status.items():
+            status[state] = round(p, 3)
+        return {
+            "best_guess": self.belief.best_guess(),
+            "confidence": round(self.belief.confidence(), 3),
+            "entropy": round(self.belief.entropy(), 3),
+            "status": status,
+        }
 
     # ---------- helpers ----------
     def scanned_near_here(self):
